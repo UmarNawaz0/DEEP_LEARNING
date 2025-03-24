@@ -49,8 +49,8 @@ y_true = np.array([
     [1, 0, 0],  # Sample 1: Class 1
     [0, 1, 0],  # Sample 2: Class 2
     [0, 0, 1],  # Sample 3: Class 3
-    [2, 3, 5],  # Sample 4: Class 4
-    [3, 4, 9]   # Sample 5: Class 5
+    [0, 0, 1],  # Sample 4: Class 4
+    [1, 0, 0]   # Sample 5: Class 5
 ])
 
 # Model predictions (logits)
@@ -59,7 +59,7 @@ logits = np.array([
     [0.5, 2.5, 0.2],  # Sample 2
     [0.1, 0.2, 3.0],   # Sample 3
     [2.5, 1.8, 9.1],  # Sample 4
-    [4, 5, 1.9]       # Sample 5
+    [4, 5,  1.9]       # Sample 5
 ])
 
 # Softmax function
