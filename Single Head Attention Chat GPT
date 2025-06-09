@@ -1,0 +1,77 @@
+# Import required library
+import numpy as np
+
+# Function to calculate parameters for a matrix
+def matrix_parameters(rows, cols, bias=False):
+    params = rows * cols
+    if bias:
+        params += rows  # Add bias terms for each output dimension
+    return params
+
+# GPT-3 Configuration (from the 3Blue1Brown transcript)
+embedding_dim = 12288  # Dimension of each token's embedding vector
+key_query_dim = 128    # Dimension for key, query, and value vectors
+num_heads = 96         # Number of attention heads per block
+num_layers = 96        # Number of transformer layers
+vocab_size = 50000     # Assumed vocabulary size
+context_length = 2048  # Maximum context length for positional encodings
+mlp_hidden_dim = 4 * embedding_dim  # MLP hidden dimension (4 * embedding_dim)
+
+# Step 1: Attention Mechanism Parameters
+# Each attention head has 4 matrices: key (Wk), query (Wq), value_down (Wv_down), value_up (Wv_up)
+params_per_matrix = matrix_parameters(key_query_dim, embedding_dim)  # 128 x 12288
+params_value_up = matrix_parameters(embedding_dim, key_query_dim)    # 12288 x 128
+params_per_head = (3 * params_per_matrix) + params_value_up         # 4 matrices per head
+
+print(f"Parameters per attention matrix (Wk, Wq, Wv_down): {params_per_matrix:,}")
+print(f"Parameters per value_up matrix: {params_value_up:,}")
+print(f"Parameters per attention head: {params_per_head:,}")
+
+# Each block has 96 heads
+params_per_attention_block = num_heads * params_per_head
+print(f"Parameters per attention block (96 heads): {params_per_attention_block:,}")
+
+# Total attention parameters across 96 layers
+total_attention_params = num_layers * params_per_attention_block
+print(f"Total attention parameters (96 layers): {total_attention_params:,}")
+
+# Step 2: MLP Parameters
+# MLP has two layers: (embedding_dim -> mlp_hidden_dim) and (mlp_hidden_dim -> embedding_dim)
+mlp_first_layer_params = matrix_parameters(mlp_hidden_dim, embedding_dim, bias=True)
+mlp_second_layer_params = matrix_parameters(embedding_dim, mlp_hidden_dim, bias=True)
+params_per_mlp_block = mlp_first_layer_params + mlp_second_layer_params
+
+print(f"\nMLP first layer parameters (49152 x 12288 + bias): {mlp_first_layer_params:,}")
+print(f"MLP second layer parameters (12288 x 49152 + bias): {mlp_second_layer_params:,}")
+print(f"Parameters per MLP block: {params_per_mlp_block:,}")
+
+# Total MLP parameters across 96 layers
+total_mlp_params = num_layers * params_per_mlp_block
+print(f"Total MLP parameters (96 layers): {total_mlp_params:,}")
+
+# Step 3: Embedding and Output Layer Parameters
+# Token embedding: vocab_size x embedding_dim
+token_embedding_params = matrix_parameters(vocab_size, embedding_dim)
+print(f"\nToken embedding parameters ({vocab_size} x {embedding_dim}): {token_embedding_params:,}")
+
+# Positional encoding: context_length x embedding_dim
+positional_embedding_params = matrix_parameters(context_length, embedding_dim)
+print(f"Positional encoding parameters ({context_length} x {embedding_dim}): {positional_embedding_params:,}")
+
+# Output layer: embedding_dim -> vocab_size + bias
+output_layer_params = matrix_parameters(vocab_size, embedding_dim, bias=True)
+print(f"Output layer parameters ({vocab_size} x {embedding_dim} + bias): {output_layer_params:,}")
+
+# Total embedding and output parameters
+total_embedding_output_params = token_embedding_params + positional_embedding_params + output_layer_params
+print(f"Total embedding + output parameters: {total_embedding_output_params:,}")
+
+# Step 4: Total Parameters
+total_params = total_attention_params + total_mlp_params + total_embedding_output_params
+print(f"\nTotal GPT-3 parameters: {total_params:,}")
+print(f"Expected total (from transcript): 175,000,000,000")
+print(f"Difference: {total_params - 175000000000:,}")
+
+# Proportion of attention parameters
+attention_proportion = total_attention_params / total_params
+print(f"Attention parameters proportion: {attention_proportion:.4f} (approx 1/3)")
