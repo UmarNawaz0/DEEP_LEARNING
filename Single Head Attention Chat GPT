@@ -75,3 +75,26 @@ print(f"Difference: {total_params - 175000000000:,}")
 # Proportion of attention parameters
 attention_proportion = total_attention_params / total_params
 print(f"Attention parameters proportion: {attention_proportion:.4f} (approx 1/3)")
+
+
+##RESULTS##
+Parameters per attention matrix (Wk, Wq, Wv_down): 1,572,864
+Parameters per value_up matrix: 1,572,864
+Parameters per attention head: 6,291,456
+Parameters per attention block (96 heads): 603,979,776
+Total attention parameters (96 layers): 57,982,058,496
+
+MLP first layer parameters (49152 x 12288 + bias): 604,028,928
+MLP second layer parameters (12288 x 49152 + bias): 603,992,064
+Parameters per MLP block: 1,208,020,992
+Total MLP parameters (96 layers): 115,970,015,232
+
+Token embedding parameters (50000 x 12288): 614,400,000
+Positional encoding parameters (2048 x 12288): 25,165,824
+Output layer parameters (50000 x 12288 + bias): 614,450,000
+Total embedding + output parameters: 1,254,015,824
+
+Total GPT-3 parameters: 175,206,089,552
+Expected total (from transcript): 175,000,000,000
+Difference: 206,089,552
+Attention parameters proportion: 0.3309 (approx 1/3)
